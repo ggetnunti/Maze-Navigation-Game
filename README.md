@@ -8,7 +8,7 @@
   <a href="#-abstract">Abstract</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-game-designs">Game Designs</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-implementation">Implementation</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-execution">Execution</a>
+  <a href="#-test-and-evaluation">Test and Evaluation</a>
 </p> 
 
 ## Abstract
@@ -789,4 +789,4 @@ For some sound effects, they will be played within the object animation, such as
 <p align="center"><img src="https://drive.google.com/uc?id=1WncAJ7xxNgcvlgXF77iw9NnmWey-Ieeq" width="600" height="150"><br /> 
 <b>Figure 22:</b> Spike up and spike down sound object/p>
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+## Test and Evaluation

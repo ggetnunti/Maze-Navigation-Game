@@ -614,5 +614,179 @@ To create enemies in the game, start by importing enemy models and animations fr
 <p align="center"><img src="https://drive.google.com/uc?id=1vTcQhipe5IHyhFBoIvXxh4g-wTJ6Fouw" width="300" height="350"><br /> 
 <b>Figure 18:</b> Lever Collison Object/p>
 
-<p align="center"><img src="https://drive.google.com/uc?id=1H01sS6vMz7LfgP6xihANWMJbbzwT5TjO" width="500" height="350"><br /> 
+<p align="center"><img src="https://drive.google.com/uc?id=1H01sS6vMz7LfgP6xihANWMJbbzwT5TjO" width="500" height="250"><br /> 
 <b>Figure 19:</b> Lever Collison Object/p>
+
+<p align="center"><img src="https://drive.google.com/uc?id=1tGq6PklnnRdRaEqjQfnM1eb3GaJ-Ynej" width="500" height="250"><br /> 
+<b>Figure 20:</b> Enemy Animator/p>
+
+- Enemy Behaviours in EnemyAI.cs
+```bash
+public NavMeshAgent ai;
+    public List<Transform> destinations;
+    public Animator aiAnim;
+    public float walkSpeed, chaseSpeed, minIdleTime, maxIdleTime, idleTime, sightDistance, chaseTime, minChaseTime, maxChaseTime;
+    public bool walking, chasing;
+    public Transform player;
+    Transform currentDest;
+    Vector3 dest;
+    int randNum;
+    public int destinationAmount;
+    public Vector3 rayCastOffset;
+
+    // When start the enemy will patrol to the destination points.
+    void Start()
+    {
+        walking = true;
+        randNum = Random.Range(0, destinationAmount);
+        currentDest = destinations[randNum];
+    }
+
+    void Update()
+    {
+        // The enemy will chase the player if the player's position on sight distance of the enemy.
+        Vector3 direction = (player.position - transform.position).normalized;
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + rayCastOffset, direction, out hit, sightDistance))
+        {
+            if (hit.collider.gameObject.tag == "Player")
+            {
+                walking = false;
+                StopCoroutine("stayIdle");
+                StopCoroutine("chaseRoutine");
+                StartCoroutine("chaseRoutine");
+                chasing = true;
+            }
+        }
+        // If enemy is chasing enemy will go to player position, change the speed and play the chasing animation.
+        if (chasing == true)
+        {
+            dest = player.position;
+            ai.destination = dest;
+            ai.speed = chaseSpeed;
+            aiAnim.ResetTrigger("walk");
+            aiAnim.ResetTrigger("idle");
+            aiAnim.SetTrigger("sprint");
+        }
+        // If enemy is not chasing the player, enemy will go to destination points and play the walking animation.
+        if (walking == true)
+        {
+            dest = currentDest.position;
+            ai.destination = dest;
+            ai.speed = walkSpeed;
+            aiAnim.ResetTrigger("sprint");
+            aiAnim.ResetTrigger("idle");
+            aiAnim.SetTrigger("walk");
+            // When the enemy reach at some destination point, it will stop walking and play the idle animation.
+            if (ai.remainingDistance <= ai.stoppingDistance)
+            {
+                aiAnim.ResetTrigger("sprint");
+                aiAnim.ResetTrigger("walk");
+                aiAnim.SetTrigger("idle");
+                ai.speed = 0;
+                StopCoroutine("stayIdle");
+                StartCoroutine("stayIdle");
+                walking = false;
+            }
+        }
+    }
+```
+
+- Enemy Routine in EnemyAI.cs
+```bash
+// Routine for stay idle of the enemy.
+    IEnumerator stayIdle()
+    {
+        idleTime = Random.Range(minIdleTime, maxIdleTime);
+        yield return new WaitForSeconds(idleTime);
+        walking = true;
+        randNum = Random.Range(0, destinationAmount);
+        currentDest = destinations[randNum];
+    }
+
+    // Routine for chasing of the enemy.
+    IEnumerator chaseRoutine()
+    {
+        chaseTime = Random.Range(minChaseTime, maxChaseTime);
+        yield return new WaitForSeconds(chaseTime);
+        walking = true;
+        chasing = false;
+        randNum = Random.Range(0, destinationAmount);
+        currentDest = destinations[randNum];
+    }
+```
+
+- On Trigger Enter in PlayControl.cs
+```bash
+// When player enter the collider of any objects
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            audioManager.PlaySFX(audioManager.bush);
+            GameManager.health -= 5;
+        }
+    }
+```
+
+### Sound Effect
+
+In the part of creating sound effects within the game, we started by finding the sound effects that are suitable for the objects in the game, such as the sound of the background, the sound of collecting items, or the sound of enemies. We found and downloaded various sound effects from freesound website [18]. After that, in the game we created an object called Audio Manager, which contains two more objects:
+- <b>Music:</b> This object is used to play the background music of the game. It is set to play on awake, loop, and have sound throughout the level.
+- <b>SFX:</b> This object is used to play the sound effects of various objects in the game, such as the sound of picking up items, the sound of opening doors, the sound of hitting obstacles, or the sound of game over and level complete. This sound will be set to play when the object of that sound is active.
+
+After that, a script is written for the Audio Manager object, which is a script that tells the game to start playing sounds from the Music object and playing other effects through the SFX object according to the parameters that are passed in.
+
+<p align="center"><img src="https://drive.google.com/uc?id=1RXmeGTA3Ak3sAapjMiRfNasT9VWysUbQ" width="200" height="250"><img src="https://drive.google.com/uc?id=10lz53RJHee-DnBaVt05zlv4uJipg_kNh" width="200" height="400"><img src="https://drive.google.com/uc?id=1Y_FYclugPHtGISFhBLJhVUdclVLj2H4Q" width="200" height="400"><br /> 
+<b>Figure 21:</b> Audio Manager, Music and SFX objects/p>
+
+- AudioManager.cs
+```bash
+    [SerializeField] AudioSource musicSource;
+    [SerializeField] AudioSource SFXSource;
+
+    public AudioClip background;
+    public AudioClip bush;
+    public AudioClip coin;
+    public AudioClip doorOpen;
+    public AudioClip gameover;
+    public AudioClip levelcomplete;
+    public AudioClip bigCoin;
+    public AudioClip heart;
+
+    private void Start()
+    {
+        musicSource.clip = background;
+        musicSource.Play();
+    }
+
+    public void PlaySFX(AudioClip clip)
+    {
+        SFXSource.PlayOneShot(clip);
+    }
+```
+
+- Example of calling the Audio Manager class
+```bash
+        if (other.gameObject.CompareTag("Obstacle"))
+        {
+            audioManager.PlaySFX(audioManager.bush);
+            GameManager.health -= 1;
+        }
+
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            audioManager.PlaySFX(audioManager.coin);
+            CoinManager.coinCount += 1;
+        } 
+```
+
+For some sound effects, they will be played within the object animation, such as the sound of spikes going up and down, or the sound of enemies walking or chasing the player. These sounds are set to play through the object animation, playing the sound object when the animation starts or changes.
+
+<p align="center"><img src="https://drive.google.com/uc?id=199LJn-Ziyxbc1r6quDBDsDxvTq1-N5hf" width="200" height="400"><img src="https://drive.google.com/uc?id=1teXDKxjKO379MN1L_DzSOg0USvhEdDP0" width="200" height="400"><br /> 
+<b>Figure 22:</b> Spike up and spike down sound object/p>
+
+<p align="center"><img src="https://drive.google.com/uc?id=1WncAJ7xxNgcvlgXF77iw9NnmWey-Ieeq" width="600" height="150"><br /> 
+<b>Figure 22:</b> Spike up and spike down sound object/p>
+
+<p align="right">(<a href="#top">back to top</a>)</p>

@@ -6,8 +6,8 @@
 
 <p align="center">
   <a href="#-abstract">Abstract</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-stack">Stack</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#-structure">Structure</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-game-designs">Game Designs</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-implementation">Implementation</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-execution">Execution</a>
 </p> 
 
@@ -464,3 +464,147 @@ private void OnTriggerEnter(Collider other)
 ### Lever
 
 The lever in the game is for the player to pull down to open the door. Creating the lever starts with creating a model in the 3D Blender program; then the model is used in Unity. After adding texture and material, the lever animation is created both when it is not active and when it is active, and the order of the lever animation is arranged in Animator. After that, a script is written for the lever, stating that if the player is near the lever and presses the [E] button on the keyboard, the lever will be activated, and the door will be opened as specified for that lever.
+
+<p align="center"><img src="https://drive.google.com/uc?id=1BRpN4AS1q4fRzdkoVhc277CwWL0mzG0G" width="500" height="350"><br /> 
+<b>Figure 15:</b> Lever animation and animator/p>
+
+<p align="center"><img src="https://drive.google.com/uc?id=1iwqfwhOil9WIxU_rTrDfYxomvfBJsRDD" width="500" height="350"><br /> 
+<b>Figure 16:</b> Lever Collison Object/p>
+
+- Active the lever in LeverScript.cs
+```bash
+// Active the lever when the player press E to the lever
+    void Update()
+    {
+        if (interactable == true)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                activateText.SetActive(false);
+                goldLeverActive = true;
+            }
+        }
+
+        if (goldLeverActive)
+        {
+            goldLeverAnimator.SetBool("isActive", true);
+            goldGate1Animator.SetBool("isOpened", true);
+            goldGate2Animator.SetBool("isOpened", true);
+            goldDoorAnimator.SetBool("isOpened", true);
+            Destroy(gameObject);
+        }
+    }
+```
+
+### Keypad
+
+The keypad is for the player to enter a code after finding all three digits on the level to open the exit door on the second level. The keypad used is from Unity's Asset Store. When the player presses the [E] key on the keyboard, the UI for entering a code on the keypad will appear. The player then enters a code on the screen. The keypad script will then check the code entered. If the number of codes entered is equal to the number of codes that are set in the script, it will check the correct code correctly. If it is correct, the exit door will open. If not, it will clear the value and require entering a new code.
+
+- Enter the value in Keypad.cs
+```bash
+// When player input the value by click the button on screen
+    public void ValueEntered(string valueEntered)
+    {
+        switch (valueEntered)
+        {
+            case "Q": // QUIT
+                keyCode.SetActive(false);
+                btnClicked = 0;
+                keypadScreen = false;
+                input = "";
+                displayText.text = input.ToString();
+                Cursor.lockState = CursorLockMode.Locked;
+                break;
+
+            case "C": //CLEAR
+                input = "";
+                btnClicked = 0;// Clear Guess Count
+                displayText.text = input.ToString();
+                break;
+
+            default: // Buton clicked add a variable
+                btnClicked++; // Add a guess
+                input += valueEntered;
+                displayText.text = input.ToString();
+                break;
+        }
+    }
+```
+
+- Check the value and open the Keypad screen in Keypad.cs
+```bash
+void Update()
+    {
+        // Player active the keypad
+        if (interactable == true)
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                activateText.SetActive(false);
+                keypadScreen = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+        }
+
+        // Enter the password
+        if (btnClicked == numOfGuesses)
+        {
+            // Enter correct password then the door will open
+            if (input == curPassword)
+            {
+                input = ""; //Clear Password
+                btnClicked = 0;
+                FindObjectOfType<PlayControl>().doorAnimator.SetBool("isCollected", true);
+                keypadScreen = false;
+            }
+            // Enter not correct password then reset the input password
+            else
+            {
+                //Reset input varible
+                input = "";
+                displayText.text = input.ToString();
+                audioData.Play();
+                btnClicked = 0;
+            }
+
+        }
+
+        // Show UI of entering the keypad
+        if (keypadScreen)
+        {
+            keyCode.SetActive(true);
+        }
+        else if (!keypadScreen)
+        {
+            keyCode.SetActive(false);
+        }
+    }
+```
+
+- On trigger stay and exit in Keypad.cs
+```bash
+// Player near the keypad
+    void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            activateText.SetActive(true);
+            interactable = true;
+        }
+    }
+
+    // Player leave the keypad
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            activateText.SetActive(false);
+            interactable = false;
+        }
+    }
+```
+
+### Enemy
+
+To create enemies in the game, start by importing enemy models and animations from the mixamo website, then write a script for the enemy's actions. Within the script, the enemy will start patrolling and stop within the level. If the enemy encounters a player within the enemy's line of sight and a specified distance, the enemy's status will change from walking to chasing the player immediately. If the enemy collides with the player's collision, a game over will occur. Within the script, we can set the values of the enemy's destinations, walking speed, running speed, visibility distance, minimum and maximum idle time, and minimum and maximum chase time. After that, add a Nav Mesh Agent component to the enemy and change the size of the radius, height and base offset of the Nav Mesh Agent to match the size of the enemy. Add the destinations of the enemy to walk to by creating the game object to be the destination of the enemy and duplicating the destination a bunch so the enemy will have random destinations to go to. In the enemy script, add the destination objects to the destination elements. All of this is to create an enemy patrol within the level, where the enemy will move to the destination that we have set in the level. After that, go to the enemy animator to create the enemy animation condition to change the work, whether it is idle, walking, or chasing, by importing all the animations that we downloaded from the mixamo website and creating a transition arrow that goes to and from each animation. For each transition arrow, disable 'Has exit time' and apply the condition to it, such as if the transition arrow going to walk animation has the 'walk' condition. In the script component, set the walking speed, chase speed, min idle time, max idle time, min chase time, max chase time, sight distance and catch distance. Finally, AI navigation will be added to the scene. Select the level's floor and set it as 'Navigation Static' and set' Navigation Area' to 'Walkable', then select the maze's walls and set it as 'Navigation Static' and set' Navigation Area' to 'Not Walkable'. After that, go to the bake tab and bake the nav mesh. All of these are like enemy areas that can be walked around within the level.
+

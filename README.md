@@ -22,6 +22,8 @@ The fundamental gameplay features include the acquisition of keys, the avoidance
 
 The outcomes of the project indicate Unity's success in developing a hard, engaging puzzle game with an emphasis on user experience, ensures that the game is both fun and repeatable, delivering lasting value to players and a solid platform for future development.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Game Designs
 
 This game is designed as a third-person adventure game and is a 3D game. The story is that the player will play the role of a character named Oliver, who goes to find Malina, who is trapped in a maze. Oliver must find the key, solve puzzles (find numbers to open the door), and pull the lever to open the door to the next level. Inside the level, there will be many obstacles, such as thorns or barbed wire, including enemies patrolling the level. The player must hide from the enemies to avoid being caught. The game is designed for the player to control through the [W, A, S, D] keys on the keyboard to walk, [Spacebar] to jump, and [Shift] to run.
@@ -53,6 +55,8 @@ For the in-game sound effects, we used sound files .mp3 and .wav that were downl
 
 <p align="center"><img src="https://drive.google.com/uc?id=1ZV1q_fr-DBsL5rUBQB2LEJv32p_5aPSK" width="500" height="350"><br /> 
 <b>Figure 4:</b> Sound effects in freesound.org</p>
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Implementation
 
@@ -790,6 +794,8 @@ For some sound effects, they will be played within the object animation, such as
 <p align="center"><img src="https://drive.google.com/uc?id=1WncAJ7xxNgcvlgXF77iw9NnmWey-Ieeq" width="600" height="150"><br /> 
 <b>Figure 22:</b> Spike up and spike down sound object</p>
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Test and Evaluation
 
 ### Main Menu
@@ -904,6 +910,8 @@ This is the last level of the game. The player must lead Malina to escape from t
 <p align="center"><img src="https://drive.google.com/uc?id=1mlGFAzfeiXUUPoGYf12rkE2QWGFpMnl-" width="450" height="300"><br /> 
 <b>Figure 45:</b> Screenshot of end credits scene</p>
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Conclusion
 
 The development of the Maze Navigation Game in Unity has successfully met many of the project’s key objectives. The main program we used to develop the game is Unity and we used Visual Studio to write the script in C#. The game offers multiple levels of increasing difficulty, incorporating collectables, power-ups, and a clean user interface for a polished user experience. Essential features such as smooth and responsive controls, well-designed UI, and engaging gameplay have been implemented effectively, aligning with the original aim of creating an educational yet enjoyable 3D puzzle game. Unity's physics engine and C# scripting were leveraged to simulate realistic player interactions, and the dynamic camera control enhances the overall gameplay immersion.
@@ -913,3 +921,5 @@ Comparison to Similar Games: The game compares favourably to other maze navigati
 Unachieved Aims: A few objectives, such as the optional implementation of AI difficulty adjustment and more complex puzzle elements, have not been fully realized. While basic AI enemy behaviours and patrols are present, refining AI difficulty for more granular control remains underdeveloped due to time constraints. The puzzle elements are implemented at a basic level but could benefit from more intuitive mechanics to better challenge players. The lack of these features can be attributed to the complexity of balancing the existing mechanics and optimizing the game’s performance.
 
 Moving forward, addressing these limitations, along with potential expansions like multiplayer mode or more sophisticated puzzle design, could greatly enhance the game’s appeal and depth. Overall, the project demonstrates significant technical and creative achievement in Unity-based game development.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
